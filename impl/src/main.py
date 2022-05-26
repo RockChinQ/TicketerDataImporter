@@ -23,7 +23,7 @@ import json
 '''
 
 # 一次多少个
-PAGE_LIMIT = 2
+PAGE_LIMIT = 200
 # 要导入的表的名称
 TARGET_DATABASE_TABLE_NAME = "orders"
 properties_path = "config.properties"
@@ -57,15 +57,19 @@ def fill(params, values):
         try:
             decoded_v = v.encode("latin1").decode("gbk")
             # special fields check
-            if p == 'time' or 'deadline':
+            if p == 'time' or p == 'deadline':
                 # 2017年6月11日9时17分55秒
-                timeArray = time.strptime(decoded_v, "%Y年%m月%d日%H时%M分%S秒")
+                try:
+                    timeArray = time.strptime(decoded_v, "%Y年%m月%d日%H时%M分%S秒")
+                except ValueError:
+                    timeArray = time.strptime(decoded_v, "%Y年%m月%d日%H时%M分")
+
                 instance_sub_data_dict[p] = int(time.mktime(timeArray))*1000
                 insert_sql += str(int(time.mktime(timeArray))*1000) + ','
             else:
                 instance_sub_data_dict[p] = decoded_v
                 insert_sql += '\''+decoded_v+'\','
-        except AttributeError:
+        except BaseException:
             instance_sub_data_dict[p] = "null"
     instance_data_list.append(instance_sub_data_dict)
     insert_sql += '),'
