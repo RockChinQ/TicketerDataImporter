@@ -57,7 +57,7 @@ def fill(params, values):
         try:
             decoded_v = v.encode("latin1").decode("gbk")
             # special fields check
-            if p == 'time' or p == 'deadline':
+            if p == 'time' or p == 'deadline' or p == 'reviewTime':
                 # 2017年6月11日9时17分55秒
                 try:
                     timeArray = time.strptime(decoded_v, "%Y年%m月%d日%H时%M分%S秒")
@@ -70,6 +70,7 @@ def fill(params, values):
                 instance_sub_data_dict[p] = decoded_v
                 insert_sql += '\''+decoded_v+'\','
         except BaseException:
+            insert_sql += '\'' + 'null' + '\','
             instance_sub_data_dict[p] = "null"
     instance_data_list.append(instance_sub_data_dict)
     insert_sql += '),'
@@ -152,9 +153,10 @@ if __name__ == '__main__':
         if count >= begin:
             instance_sub_data_dict = {}
             values_tuple = (i["业务编号"], i["工单状态"], i["客户"], i["手机"], i["联系电话"], i["地址"], i["送修时间"],
-                            i["截止时间"], i["维修机器"], "source", i["品牌"], i["系统单号"], "upstreamLabel", i["维修备注"],
-                            i["内部备注"], "workerRecord", i["维修师"], "log", "documents", "review", "reviewTime",
-                            "reviewLevel", "fault")
+                            i["截止时间"], i["维修机器"], i["服务类型"], i["品牌"], i["系统单号"], "upstreamLabel", i["维修备注"],
+                            i["内部备注"], i["维修师"]+","+i["维修师1"], i["维修师"], "log", "documents",
+                            i["型号"]+'\n'+i["维修费用"], i["截止日期"],
+                            "reviewLevel", i["故障原因"])
             fill(params_tuple, values_tuple)
         count += 1
         instance_count += 1
