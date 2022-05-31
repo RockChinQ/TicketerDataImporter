@@ -24,5 +24,5 @@
 |workerRecord|维修师+维修师1|String|""|
 |documents|img1 img2 img3 img4 img5 img6|String,Base64密文,由多条图片资料文件的路径组成,每条路径格式: <路径字符串>,单个订单中整个图片资料列表字符串格式: <单个图片路径>::<单个图片路径>::|""|
 |review|型号+\n+维修费用|String|""|
-|reviewTime|截止日期|long,订单回访日期的时间戳,当日0:00:00的时间戳,包含毫秒数|0|
+|reviewTime|截止时间|long,订单回访日期的时间戳,当日0:00:00的时间戳,包含毫秒数|0|
 |fault|故障原因|String|""|
