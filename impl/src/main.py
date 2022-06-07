@@ -82,7 +82,10 @@ def fill(params, values):
                 # insert_sql += '\'' + decoded_v + '\','
         except BaseException:
             # insert_sql += '\'' + '' + '\','
-            instance_sub_data_dict[p] = ""
+            if p == 'deadline' or p == 'time' or p == 'reviewTime':
+                instance_sub_data_dict[p] = 0
+            else:
+                instance_sub_data_dict[p] = ""
     instance_data_list.append(instance_sub_data_dict)
     # insert_sql += '),'
 
