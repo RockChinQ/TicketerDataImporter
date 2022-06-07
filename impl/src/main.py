@@ -75,7 +75,7 @@ def fill(params, values):
                     instance_sub_data_dict[p] = int(time.mktime(timeArray)) * 1000
                 except BaseException:
                     decoded_v = 0
-                instance_sub_data_dict[p] = decoded_v
+                    instance_sub_data_dict[p] = decoded_v
                 # insert_sql += str(int(time.mktime(timeArray)) * 1000) + ','
             else:
                 instance_sub_data_dict[p] = decoded_v
