@@ -69,10 +69,13 @@ def fill(params, values):
                 # 2017年6月11日9时17分55秒
                 try:
                     timeArray = time.strptime(decoded_v, "%Y年%m月%d日%H时%M分%S秒")
+                    instance_sub_data_dict[p] = int(time.mktime(timeArray)) * 1000
                 except ValueError:
                     timeArray = time.strptime(decoded_v, "%Y年%m月%d日%H时%M分")
-
-                instance_sub_data_dict[p] = int(time.mktime(timeArray)) * 1000
+                    instance_sub_data_dict[p] = int(time.mktime(timeArray)) * 1000
+                except BaseException:
+                    decoded_v = 0
+                instance_sub_data_dict[p] = decoded_v
                 # insert_sql += str(int(time.mktime(timeArray)) * 1000) + ','
             else:
                 instance_sub_data_dict[p] = decoded_v
@@ -165,6 +168,7 @@ if __name__ == '__main__':
     db_database = prop['db_database']
     begin = int(prop['beginning'])
     end = int(prop['ending'])
+    count = begin
 
     print("从数据库抓取数据...", end='')
     # 得到mssql所有的数据
