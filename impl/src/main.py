@@ -1,6 +1,6 @@
 import base64
 import time
-
+import os
 import pymssql
 
 import getProperties
@@ -116,7 +116,7 @@ def on_finish_single_task():
     instance_overall_dict['data'] = instance_data_dict
     # instance_overall_dict['sqls'] = instance_sql_list
 
-    f = open('output_' + str(f_tag) + '.txt', 'w', encoding="UTF-8")
+    f = open('output/output_' + str(f_tag) + '.tods', 'w', encoding="UTF-8")
     f.write(json.dumps(instance_overall_dict, ensure_ascii=False))
     f.flush()
 
@@ -133,28 +133,23 @@ def on_finish_single_task():
 # 经查证,均为PNG 或 JPG格式
 # source_string是十六进制数的字符串表示,以0x开头
 def imgAsFile(source_string, target_file_name):
-    try:
-        write_pointer = 0
-        index = 1
-        temp_str = ""
-        extension = "png"
-        if str(source_string).startswith("0xFFD8FF"):
-            extension = "jpg"
-        target = open(target_file_name + "." + extension, "wb")
+    write_pointer = 0
+    index = 1
+    temp_str = ""
+    extension = "png"
+    if str(source_string).startswith("0xFFD8FF"):
+        extension = "jpg"
+    target = open(target_file_name + "." + extension, "wb")
 
-        for c in source_string[2::1]:  # 遍历每两个字符,转换成一个字节写入文件
-            temp_str = temp_str + c
-            if index % 2 == 0:
-                target.seek(write_pointer)
-                target.write(int(temp_str, 16).to_bytes(length=1, byteorder='big', signed=False))
-                write_pointer += 1
-
-                temp_str = ""
-            index += 1
-
-        target.close()
-    except BaseException:
-        print(source_string)
+    for c in source_string[2::1]:  # 遍历每两个字符,转换成一个字节写入文件
+        temp_str = temp_str + c
+        if index % 2 == 0:
+            target.seek(write_pointer)
+            target.write(int(temp_str, 16).to_bytes(length=1, byteorder='big', signed=False))
+            write_pointer += 1
+            temp_str = ""
+        index += 1
+    target.close()
     return target_file_name + "." + extension
 
 
@@ -171,7 +166,11 @@ if __name__ == '__main__':
     db_database = prop['db_database']
     begin = int(prop['beginning'])
     end = int(prop['ending'])
-    count = begin
+    count = 0
+
+    os.mkdir("output")
+    os.mkdir("output/images")
+
 
     print("从数据库抓取数据...", end='')
     # 得到mssql所有的数据
@@ -196,28 +195,28 @@ if __name__ == '__main__':
 
             # packaging 'documents' field
             field_documents_img = ''
-            if i['img1'] != 'NULL':
-                field_documents_img += imgAsFile(i['img1'], 'img_'+str(img_tag)+'_'+'1') + '::'
-            if i['img2'] != 'NULL':
-                field_documents_img += imgAsFile(i['img2'], 'img_'+str(img_tag)+'_'+'2') + '::'
-            if i['img3'] != 'NULL':
-                field_documents_img += imgAsFile(i['img3'], 'img_'+str(img_tag)+'_'+'3') + '::'
-            if i['img4'] != 'NULL':
-                field_documents_img += imgAsFile(i['img4'], 'img_'+str(img_tag)+'_'+'4') + '::'
-            if i['img5'] != 'NULL':
-                field_documents_img += imgAsFile(i['img5'], 'img_'+str(img_tag)+'_'+'5') + '::'
-            if i['img6'] != 'NULL':
-                field_documents_img += imgAsFile(i['img6'], 'img_'+str(img_tag)+'_'+'6') + '::'
+            if i['img1'] != 'NULL' and i['img1'] != '0x':
+                field_documents_img += imgAsFile(i['img1'], 'output/images/img_'+str(img_tag)+'_'+'1') + '::'
+            if i['img2'] != 'NULL' and i['img2'] != '0x':
+                field_documents_img += imgAsFile(i['img2'], 'output/images/img_'+str(img_tag)+'_'+'2') + '::'
+            if i['img3'] != 'NULL' and i['img3'] != '0x':
+                field_documents_img += imgAsFile(i['img3'], 'output/images/img_'+str(img_tag)+'_'+'3') + '::'
+            if i['img4'] != 'NULL' and i['img4'] != '0x':
+                field_documents_img += imgAsFile(i['img4'], 'output/images/img_'+str(img_tag)+'_'+'4') + '::'
+            if i['img5'] != 'NULL' and i['img5'] != '0x':
+                field_documents_img += imgAsFile(i['img5'], 'output/images/img_'+str(img_tag)+'_'+'5') + '::'
+            if i['img6'] != 'NULL' and i['img6'] != '0x':
+                field_documents_img += imgAsFile(i['img6'], 'output/images/img_'+str(img_tag)+'_'+'6') + '::'
             if field_documents_img != '':
                 field_documents_img = base64.b64encode(field_documents_img.encode('utf-8'))
-                print(str(field_documents_img))
+                # print(str(field_documents_img))
 
             field_worker_record = ''
-            if i["维修师"] != 'NULL':
+            if i["维修师"] != 'NULL' and i["维修师"]!=None:
                 field_worker_record += i["维修师"]+'+'
             else:
                 field_worker_record += '+'
-            if i["维修师1"] != 'NULL':
+            if i["维修师1"] != 'NULL' and i["维修师1"]!=None:
                 field_worker_record += i["维修师1"]
 
             values_tuple = (i["业务编号"], i["工单状态"], i["客户"], i["手机"], i["联系电话"], i["地址"], i["送修时间"],
@@ -225,11 +224,11 @@ if __name__ == '__main__':
                             i["内部备注"], field_worker_record, str(field_documents_img),
                             str(i["型号"]) + '\n' + str(i["维修费用"]), i["截止时间"], i["故障原因"])
             fill(params_tuple, values_tuple)
+            instance_count += 1
+            if instance_count == PAGE_LIMIT:
+                on_finish_single_task()
         img_tag += 1
         count += 1
-        instance_count += 1
-        if instance_count == PAGE_LIMIT:
-            on_finish_single_task()
 
     # 剩下来的数据的处理
     if instance_count > 0:
