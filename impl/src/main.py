@@ -196,17 +196,17 @@ if __name__ == '__main__':
             # packaging 'documents' field
             field_documents_img = ''
             if i['img1'] != 'NULL' and i['img1'] != '0x':
-                field_documents_img += imgAsFile(i['img1'], 'output/images/img_'+str(img_tag)+'_'+'1') + '::'
+                field_documents_img += imgAsFile(i['img1'], 'output\\images\\img_'+str(img_tag)+'_'+'1') +  '::{}:::'.format(int(time.time()))
             if i['img2'] != 'NULL' and i['img2'] != '0x':
-                field_documents_img += imgAsFile(i['img2'], 'output/images/img_'+str(img_tag)+'_'+'2') + '::'
+                field_documents_img += imgAsFile(i['img2'], 'output\\images\\img_'+str(img_tag)+'_'+'2') +  '::{}:::'.format(int(time.time()))
             if i['img3'] != 'NULL' and i['img3'] != '0x':
-                field_documents_img += imgAsFile(i['img3'], 'output/images/img_'+str(img_tag)+'_'+'3') + '::'
+                field_documents_img += imgAsFile(i['img3'], 'output\\images\\img_'+str(img_tag)+'_'+'3') +  '::{}:::'.format(int(time.time()))
             if i['img4'] != 'NULL' and i['img4'] != '0x':
-                field_documents_img += imgAsFile(i['img4'], 'output/images/img_'+str(img_tag)+'_'+'4') + '::'
+                field_documents_img += imgAsFile(i['img4'], 'output\\images\\img_'+str(img_tag)+'_'+'4') +  '::{}:::'.format(int(time.time()))
             if i['img5'] != 'NULL' and i['img5'] != '0x':
-                field_documents_img += imgAsFile(i['img5'], 'output/images/img_'+str(img_tag)+'_'+'5') + '::'
+                field_documents_img += imgAsFile(i['img5'], 'output\\images\\img_'+str(img_tag)+'_'+'5') +  '::{}:::'.format(int(time.time()))
             if i['img6'] != 'NULL' and i['img6'] != '0x':
-                field_documents_img += imgAsFile(i['img6'], 'output/images/img_'+str(img_tag)+'_'+'6') + '::'
+                field_documents_img += imgAsFile(i['img6'], 'output\\images\\img_'+str(img_tag)+'_'+'6') +  '::{}:::'.format(int(time.time()))
             if field_documents_img != '':
                 field_documents_img = str(base64.b64encode(field_documents_img.encode('utf-8'))).replace("b'","").replace("'","")
                 # print(str(field_documents_img))
