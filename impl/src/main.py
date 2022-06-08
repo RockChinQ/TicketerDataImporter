@@ -166,7 +166,7 @@ if __name__ == '__main__':
     db_database = prop['db_database']
     begin = int(prop['beginning'])
     end = int(prop['ending'])
-    count = 0
+    count = 1
 
     os.mkdir("output")
     os.mkdir("output/images")
@@ -188,7 +188,7 @@ if __name__ == '__main__':
     将填到status、type字段中的值,若不包含在强制格式要求要求的表中,需要添加
     '''
     for i in data:
-        if count == end:
+        if count > end:
             break
         if count >= begin:
             instance_sub_data_dict = {}
@@ -208,7 +208,7 @@ if __name__ == '__main__':
             if i['img6'] != 'NULL' and i['img6'] != '0x':
                 field_documents_img += imgAsFile(i['img6'], 'output/images/img_'+str(img_tag)+'_'+'6') + '::'
             if field_documents_img != '':
-                field_documents_img = base64.b64encode(field_documents_img.encode('utf-8'))
+                field_documents_img = str(base64.b64encode(field_documents_img.encode('utf-8'))).replace("b'","").replace("'","")
                 # print(str(field_documents_img))
 
             field_worker_record = ''
